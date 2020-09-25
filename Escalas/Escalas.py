@@ -17,6 +17,8 @@ for i in range(len(n)):
     if i != 0:
         G.add_edge(n[i-1],n[i])
 print(n)
+fig = plt.figure()
 nx.draw_kamada_kawai(G,with_labels=True,font_weight='bold',font_size=10,**options)
+fig.set_facecolor("#9e9998")
 plt.savefig('Grafo_{0}.png'.format(main.nombre))
 plt.show()

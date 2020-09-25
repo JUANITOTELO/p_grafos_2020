@@ -1,7 +1,7 @@
 import music21 as m
 import os
 aDir=os.getcwd()
-nombre = 'BJBP'
+nombre = 'aural'
 song = m.converter.parse('{0}/ArchiXml/{1}.xml'.format(aDir,nombre))
 #sp = m.midi.realtime.StreamPlayer(song)
 #sp.play()
@@ -10,16 +10,8 @@ song = song.stripTies()
 
 # unfold repetitions
 i = 0
-for a in song:
-    if a.isStream:
-        e = m.repeat.Expander(a)
-        s2 = e.process()
-        timing = s2.secondsMap
-        song[i] = s2
-    i += 1
 
 # todo: add note onsets
-
 def getMusicProperties(x):
     s = ''
     t=''
@@ -36,11 +28,12 @@ def getMusicProperties(x):
 
 notas = []
 for a in song.recurse().notes:
-
+    
     if (a.isNote):
         x = a
         s = getMusicProperties(x)
         notas.append(s)
+        
 
     if (a.isChord):
         n = ''
@@ -54,6 +47,5 @@ for a in song.recurse().notes:
         x = a
         s = getMusicProperties(x)
         notas.append(s)
-
 
 print("Done.")
