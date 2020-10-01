@@ -1,17 +1,20 @@
 import igraph as ig
-import netgraph
+import netgraph, numpy, os
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import networkx as nx
-import numpy
 import music21 as m
-import os
+from os import listdir
+from os.path import isfile, join
 import chart_studio.plotly as py
 import plotly.graph_objs as go
 
 
 aDir = os.getcwd()
-nombre = input("Escriba el nombre el archivo:\n")
+onlyfiles = [f for f in listdir('{0}/ArchiXml/'.format(aDir)) if isfile(join('{0}/ArchiXml/'.format(aDir), f))]
+for i in onlyfiles:
+    print(i.replace('.xml',''))
+nombre = input("Escriba el nombre del archivo:\n")
 song = m.converter.parse('{0}/ArchiXml/{1}.xml'.format(aDir, nombre))
 print("Convirtiendo...")
 #sp = m.midi.realtime.StreamPlayer(song)
@@ -117,7 +120,7 @@ for i in range(M):
 
 ax = plt.gca()
 ax.set_axis_off()
-fig.set_facecolor("#9e9998")
+fig.set_facecolor("#9e999820")
 fig.set_size_inches((15, 15))
 print("Listo.")
 plt.show()
@@ -170,7 +173,7 @@ trace2 = go.Scatter3d(x=Xn,
                                   ),
                       text=Nodes,
                       hoverinfo="text"
-                      )
+        )
 
 axis = dict(showbackground=False,
             showline=False,
@@ -178,10 +181,10 @@ axis = dict(showbackground=False,
             showgrid=False,
             showticklabels=False,
             title=''
-            )
+        )
 
 layout = go.Layout(
-    title="Grafo de la partitura {0} (3D visualization)".format(nombre),
+    title="Grafo de la partitura {0}".format(nombre),
     width=1000,
     height=1000,
     showlegend=False,
@@ -194,22 +197,7 @@ layout = go.Layout(
         t=100
     ),
     hovermode='closest',
-    annotations=[
-        dict(
-            showarrow=False,
-            text="Data source: <a href='https://plotly.com/python/v3/3d-network-graph/'>[1] tutorial_grafo_3D</a>",
-            xref='paper',
-            yref='paper',
-            x=0,
-            y=0.1,
-            xanchor='left',
-            yanchor='bottom',
-            font=dict(
-                size=14
-            )
-        )
-
-    ],)
+)
 
 data = [trace1, trace2]
 figure = go.Figure(data=data, layout=layout)
