@@ -20,7 +20,11 @@ G.graph['graph'] = {'scale': '3'}
 A = to_agraph(G) 
 A.node_attr["fixedsize"] = "true"
 A.node_attr['style']='filled'
-n = A.get_node(cell2.g[1][0])
-n.attr['fillcolor']="#AAAAAA"
+n = A.get_node(cell2.g[0][0])
+n.attr['fillcolor']="#32CD32"
+nf = A.get_node(cell2.g[0][-1])
+nf.attr['fillcolor']="#DC143C"
+
+
 A.layout('dot')                                                                 
-A.draw('{0}.svg'.format(cell2.g2D[1])) 
+A.draw('{0}.pdf'.format(cell2.g2D[1])) 

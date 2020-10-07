@@ -55,6 +55,6 @@ nx.draw_networkx_labels(
 ax = plt.gca()
 ax.set_axis_off()
 fig.set_size_inches((7, 7))
-fig.set_facecolor("#9e9998")
+fig.set_facecolor("#564f4f")
 plt.savefig('Escalas/Grafo_{0}.png'.format(main.nombre))
 plt.show()

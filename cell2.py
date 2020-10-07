@@ -1,4 +1,3 @@
-import cell1
 import igraph as ig
 import music21 as m
 import networkx as nx
@@ -18,32 +17,17 @@ def song_to_dict():
     """Convierte la partitura en un diccionario que incluye los instrumentos numerados del 0 hasta el total de
        instrumentos-1, compaces, notas y acordes de todo el documento,
        retornando una tupla con el diccionario, una lista con todas las notas y otra con los acordes"""
-    obN = int(input("¿el archivo a convertir es .mid (0) o .xml (1)?\n"))
     aDir = os.getcwd()
-    if(obN == 1):
-        onlyfiles = [f for f in listdir(
-            '{0}/ArchiXml/'.format(aDir)) if isfile(join('{0}/ArchiXml/'.format(aDir), f))]
-        # Imprimir archivos disponibles
-        for i in onlyfiles:
-            print(i.replace('.xml', ''))
+    onlyfiles = [f for f in listdir(
+        '{0}/ArchiXml/'.format(aDir)) if isfile(join('{0}/ArchiXml/'.format(aDir), f))]
+    # Imprimir archivos disponibles
+    for i in onlyfiles:
+        print(i.replace('.xml', ''))
 
-        nombre = input("Escriba el nombre del archivo:\n")
-        song = m.converter.parse('{0}/ArchiXml/{1}.xml'.format(aDir, nombre))
-        print("Separando archivo por partes...")
-    elif(obN == 0):
-        onlyfiles = [f for f in listdir(
-            '{0}/ArchMidi/'.format(aDir)) if isfile(join('{0}/ArchMidi/'.format(aDir), f))]
-        # Imprimir archivos disponibles
-        for i in onlyfiles:
-            print(i.replace('.mid', ''))
-
-        nombre = input("Escriba el nombre del archivo:\n")
-        mf = m.midi.MidiFile()
-        mf.open('{0}/ArchMidi/{1}.mid'.format(aDir, nombre))
-        mf.read()
-        mf.close()
-        print(len(mf.tracks))
-        song = m.midi.translate.midiFileToStream(mf)
+    nombre = input("Escriba el nombre del archivo:\n")
+    song = m.converter.parse('{0}/ArchiXml/{1}.xml'.format(aDir, nombre))
+    print("Separando archivo por partes...")
+    
     partes = []
     compaces = []
     notas = []
@@ -155,7 +139,7 @@ def m_graph(n, nombre):
                     arrowsize=10,
                     edge_color=edge_colors,
                     edge_cmap=plt.cm.Blues,
-                    connectionstyle="arc3,rad=0.2",
+                    #connectionstyle="arc3,rad=0.2",
                     width=3,
                 )
                 nx.draw_networkx_labels(
@@ -180,6 +164,7 @@ def m_graph(n, nombre):
                 fig.set_size_inches((10, 10))
                 plt.savefig(
                     '{0}/prVideo/Grafo_{1}_{2}.png'.format(aDir, nombre, i))
+                print("Listo.")
                 plt.clf()
                 plt.close("all")
     else:
@@ -190,66 +175,77 @@ def m_graph(n, nombre):
         pos = nx.layout.kamada_kawai_layout(G)
         sf = 10
         sn = 10
-        if(len(n) <= 40):
+        tn = len(n)
+        if(tn <= 40):
             sf = 15
             sn = 100
         d = dict(G.degree)
-        low, *_, high = sorted(d.values())
-        norm = mpl.colors.Normalize(vmin=low, vmax=high, clip=True)
-        mapper = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.coolwarm)
+        try:
+            low, *_, high = sorted(d.values())
+            norm = mpl.colors.Normalize(vmin=low, vmax=high, clip=True)
+            mapper = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.coolwarm)
 
-        node_sizes = [v*sn for v in d.values()]
-        M = G.number_of_edges()
-        edge_colors = range(2, M+2)
-        edge_alphas = [(5 + i) / (M + 4) for i in range(M)]
-        fig = plt.figure()
-        nx.draw_networkx_nodes(
-            G,
-            pos,
-            node_size=node_sizes,
-            node_color=[mapper.to_rgba(i) for i in d.values()]
-        )
-        edges = nx.draw_networkx_edges(
-            G,
-            pos,
-            node_size=node_sizes,
-            arrowstyle="wedge",
-            arrowsize=10,
-            edge_color=edge_colors,
-            edge_cmap=plt.cm.Blues,
-            connectionstyle="arc3,rad=0.1",
-            width=3,
-        )
-        nx.draw_networkx_labels(
-            G,
-            pos,
-            font_size=sf,
-            font_color="white",
-        )
-        # set alpha value for each edge
-        # colorFE = []
-        for i in range(M):
-            edges[i].set_alpha(edge_alphas[i])
-            # colorFE.append(edge_alphas[i])
+            node_sizes = [v*sn for v in d.values()]
+            M = G.number_of_edges()
+            edge_colors = range(2, M+2)
+            edge_alphas = [(5 + i) / (M + 4) for i in range(M)]
+            fig = plt.figure()
+            nx.draw_networkx_nodes(
+                G,
+                pos,
+                node_size=node_sizes,
+                node_color=[mapper.to_rgba(i) for i in d.values()]
+            )
+            edges = nx.draw_networkx_edges(
+                G,
+                pos,
+                node_size=node_sizes,
+                arrowstyle="wedge",
+                arrowsize=10,
+                edge_color=edge_colors,
+                edge_cmap=plt.cm.Blues,
+                #connectionstyle="arc3,rad=0.1",
+                width=3,
+            )
+            print(tn)
+            
+            nx.draw_networkx_labels(
+                G,
+                pos,
+                font_size=sf,
+                font_color="white",
+            )
+            # set alpha value for each edge
+            # colorFE = []
+            for i in range(M):
+                edges[i].set_alpha(edge_alphas[i])
+                # colorFE.append(edge_alphas[i])
 
-        # pc = mpl.collections.PatchCollection(edges, cmap=plt.cm.Blues)
-        # pc.set_array(edge_colors)
-        # plt.colorbar(pc)
+            # pc = mpl.collections.PatchCollection(edges, cmap=plt.cm.Blues)
+            # pc.set_array(edge_colors)
+            # plt.colorbar(pc)
 
-        ax = plt.gca()
-        ax.set_axis_off()
-        fig.set_facecolor("#564f4f")
-        fig.set_size_inches((10, 10))
-        plt.savefig('{0}/GrafosImgs/nov_{1}.png'.format(aDir, nombre))
-        plt.show()
-
-    print("Listo.")
+            ax = plt.gca()
+            ax.set_axis_off()
+            fig.set_facecolor("#564f4f")
+            fig.set_size_inches((10, 10))
+            plt.savefig('{0}/GrafosImgs/grafo_{1}.png'.format(aDir, nombre))
+            print("Listo.")
+            plt.show()
+        except:
+            print("Hubo un error.")
 
     return G, nombre
 
 
 g = song_to_dict()
 
+#n0 = []
+#for i in range(len(g[0][0])):
+#    if ('M{0}'.format(i+1) in g[0][0]):
+#        n0 += g[0][0]['M{0}'.format(i+1)]['notas']
+    
+#print(n0)
+#g2D = m_graph(n0, g[3])
 g2D = m_graph(g[1]+g[2], g[3])
-
-# cell1.c_3D(g2D[0],g2D[1])
+#cell1.c_3D(g2D[0],g2D[1])

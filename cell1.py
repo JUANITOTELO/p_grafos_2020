@@ -7,7 +7,24 @@ import music21 as m
 from os import listdir
 from os.path import isfile, join
 import chart_studio.plotly as py
+import xlsxwriter
+import pandas as pd
 import plotly.graph_objs as go
+
+def pasar_na_num(G):
+    """Recibe un grafo de la libreria networkx.
+       Retorna una lista con los esxtremos de las aristas como números."""
+    Nodes = list(G.nodes)
+    edges2 = list(G.edges)
+    N = len(Nodes)
+    Edges = []
+    for i in edges2:
+        i = list(i)
+        for j in range(2):
+            i[j] = Nodes.index(i[j])
+        i = tuple(i)
+        Edges.append(i)
+    return Edges
 
 def c_2D():
     """Convierte un archivo .xml en un grafo 2 dimensional agrupando las notas y acordes pertenecientes a cada 
@@ -41,7 +58,8 @@ def c_2D():
         if a.isStream:
             e = m.repeat.Expander(a)
             s2 = e.process()
-            timing = s2.secondsMap
+            #timing = s2.secondsMap
+            #print(timing)
             song[i] = s2
         i += 1
 
@@ -90,56 +108,61 @@ def c_2D():
         if i != 0:
             G.add_edge(n[i-1], n[i])
 
-    pos = nx.layout.kamada_kawai_layout(G)
-
-    d = dict(G.degree)
-    low, *_, high = sorted(d.values())
-    norm = mpl.colors.Normalize(vmin=low, vmax=high, clip=True)
-    mapper = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.coolwarm)
-    node_sizes = [v*10 for v in d.values()]
-    M = G.number_of_edges()
-    edge_colors = range(2, M+2)
-    edge_alphas = [(5 + i) / (M + 4) for i in range(M)]
-    fig = plt.figure()
-    nodes = nx.draw_networkx_nodes(
-        G,
-        pos,
-        node_size=node_sizes,
-        node_color=[mapper.to_rgba(i) for i in d.values()]
-    )
-    edges = nx.draw_networkx_edges(
-        G,
-        pos,
-        node_size=node_sizes,
-        arrowstyle="wedge",
-        arrowsize=10,
-        edge_color=edge_colors,
-        edge_cmap=plt.cm.Blues,
-        width=2,
-    )
-    labels = nx.draw_networkx_labels(
-        G,
-        pos,
-        font_size=10,
-        font_color="white",
-    )
-    # set alpha value for each edge
-    colorFE = []
-    for i in range(M):
-        edges[i].set_alpha(edge_alphas[i])
-        colorFE.append(edge_alphas[i])
-
-    # pc = mpl.collections.PatchCollection(edges, cmap=plt.cm.Blues)
-    # pc.set_array(edge_colors)
-    # plt.colorbar(pc)
-
-    ax = plt.gca()
-    ax.set_axis_off()
-    fig.set_facecolor("#9e999860")
-    fig.set_size_inches((15, 15))
-    plt.savefig('{0}/GrafosImgs/Grafo_{1}.png'.format(aDir,nombre))
+    sn = int(input("¿Guardar grafo? No(0) Si(1)"))
     print("Listo.")
-    plt.show()
+
+    if(sn == 1):
+        pos = nx.layout.kamada_kawai_layout(G)
+
+        d = dict(G.degree)
+        low, *_, high = sorted(d.values())
+        norm = mpl.colors.Normalize(vmin=low, vmax=high, clip=True)
+        mapper = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.coolwarm)
+        node_sizes = [v*10 for v in d.values()]
+        M = G.number_of_edges()
+        edge_colors = range(2, M+2)
+        edge_alphas = [(5 + i) / (M + 4) for i in range(M)]
+        fig = plt.figure()
+        nx.draw_networkx_nodes(
+            G,
+            pos,
+            node_size=node_sizes,
+            node_color=[mapper.to_rgba(i) for i in d.values()]
+        )
+        edges = nx.draw_networkx_edges(
+            G,
+            pos,
+            node_size=node_sizes,
+            arrowstyle="wedge",
+            arrowsize=10,
+            edge_color=edge_colors,
+            edge_cmap=plt.cm.Blues,
+            width=2,
+        )
+        nx.draw_networkx_labels(
+            G,
+            pos,
+            font_size=10,
+            font_color="white",
+        )
+        # set alpha value for each edge
+        colorFE = []
+        for i in range(M):
+            edges[i].set_alpha(edge_alphas[i])
+            colorFE.append(edge_alphas[i])
+
+        # pc = mpl.collections.PatchCollection(edges, cmap=plt.cm.Blues)
+        # pc.set_array(edge_colors)
+        # plt.colorbar(pc)
+
+        ax = plt.gca()
+        ax.set_axis_off()
+        fig.set_facecolor("#564f4f")
+        fig.set_size_inches((15, 15))
+        plt.savefig('{0}/GrafosImgs/Grafo_{1}.png'.format(aDir,nombre))
+        print("Listo.")
+        plt.show()
+    
     return G, nombre
 
 def c_3D(G, nombre):
@@ -149,18 +172,10 @@ def c_3D(G, nombre):
     aDir = os.getcwd()
     d = dict(G.degree)
     Nodes = list(G.nodes)
-    edges2 = list(G.edges)
     N = len(Nodes)
-    Edges = []
-    for i in edges2:
-        i = list(i)
-        for j in range(2):
-            i[j] = Nodes.index(i[j])
-        i = tuple(i)
-        Edges.append(i)
+    Edges = pasar_na_num(G)
 
     Grafo = ig.Graph(Edges, directed=True)
-
     layt = Grafo.layout('kk', dim=3)
 
     Xn = [layt[k][0] for k in range(N)]  # x-coordinates of nodes
@@ -232,5 +247,25 @@ def c_3D(G, nombre):
     figure.write_html("{0}/app/templates/3D_Graph_{1}.html".format(aDir,nombre))
     print("Listo.")
     figure.show()
-# grafo1 = c_2D()
+
+def c_csv(grafo1):
+    """Recibe lo que retorna la función c_2D y crea un archivo csv"""
+    toex = pasar_na_num(grafo1[0])
+    libro = xlsxwriter.Workbook('{0}.xlsx'.format(grafo1[1]))
+    hoja = libro.add_worksheet()
+    row = 1
+    hoja.write(0, 0, "Source")
+    hoja.write(0, 1, "Target")
+    for i in toex:
+        hoja.write(row, 0, i[0]+1)
+        hoja.write(row, 1, i[1]+1)
+        row += 1
+    libro.close()
+    read_file = pd.read_excel(r'{0}.xlsx'.format(grafo1[1]), sheet_name='Sheet1')
+    read_file.to_csv (r'ArchCsv/{0}.csv'.format(grafo1[1]), index = None, header=True)
+    os.system("rm {0}.xlsx".format(grafo1[1]))
+
+
+#grafo1 = c_2D()
+#c_csv(grafo1)
 # c_3D(grafo1[0],grafo1[1])
