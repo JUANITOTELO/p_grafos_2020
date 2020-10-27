@@ -1,3 +1,4 @@
+import cell1
 import igraph as ig
 import music21 as m
 import networkx as nx
@@ -5,6 +6,9 @@ from os import listdir
 import matplotlib as mpl
 import netgraph
 import numpy
+from progressbar import progressbar
+from alive_progress import alive_bar
+import time
 import os
 import plotly.graph_objs as go
 import matplotlib.pyplot as plt
@@ -16,13 +20,18 @@ import matplotlib.animation as animation
 def song_to_dict():
     """Convierte la partitura en un diccionario que incluye los instrumentos numerados del 0 hasta el total de
        instrumentos-1, compaces, notas y acordes de todo el documento,
-       retornando una tupla con el diccionario, una lista con todas las notas y otra con los acordes"""
+       retornando una tripla con el diccionario, una lista con todas las notas y otra con los acordes y por último el nombre"""
     aDir = os.getcwd()
-    onlyfiles = [f for f in listdir(
-        '{0}/ArchiXml/'.format(aDir)) if isfile(join('{0}/ArchiXml/'.format(aDir), f))]
+    archivos = listdir('{0}/ArchiXml/'.format(aDir))
+    onlyfiles = []
+    for f in progressbar(archivos):
+        if isfile(join('{0}/ArchiXml/'.format(aDir), f)):
+            onlyfiles.append(f)
+        time.sleep(0.04)
     # Imprimir archivos disponibles
     for i in onlyfiles:
         print(i.replace('.xml', ''))
+        
 
     nombre = input("Escriba el nombre del archivo:\n")
     song = m.converter.parse('{0}/ArchiXml/{1}.xml'.format(aDir, nombre))
@@ -39,15 +48,16 @@ def song_to_dict():
     # print(partes["piano"]["compas 1"]["acordes"])
     # print(partes["piano"]["compas 1"]["acordes"][0])
     for i in song.parts:
+        
         parte = ""
         if i.partName == None:
             parte = "piano"
         else:
             parte = str(i.partName)
         partes.append(parte)
-        print(parte)
+        #print(parte)
         temCompaces = []
-        for j in i.recurse().getElementsByClass('Measure'):
+        for j in progressbar(i.recurse().getElementsByClass('Measure')):
             numer = int(j.number)
             compa = "M{0}".format(numer)
             temNotas = []
@@ -64,28 +74,32 @@ def song_to_dict():
                     {compa: {"notas": temNotas, "acordes": temAcordes}})
             notas += temNotas
             acordes += temAcordes
+            time.sleep(0.04)
         compaces.append(temCompaces)
 
     c = 1
     print("Agrupando los compaces...")
     Compaces = []
-    for i in compaces:
+    for i in progressbar(compaces):
         if i != []:
             xx = i[0]
             for f in range(len(i)-1):
                 yy = i[f+1]
                 xx.update(yy)
             Compaces.append(xx)
+        time.sleep(0.04)
 
     cancion = {}
     o = len(Compaces)
-    for i in range(o-1):
+    for i in progressbar(range(o-1)):
         partes[i] = (c-1)
         partes[i+1] = c
         c += 1
+        time.sleep(0.04)
 
-    for i in range(o):
+    for i in progressbar(range(o)):
         cancion.update({partes[i]: Compaces[i]})
+        time.sleep(0.02)
 #     print("Compaces, notas y acordes de {0}:\n{1}".format(nombre,cancion))
 #     print("Notas de {0}:\n{1}".format(nombre,notas))
 #     print("Acordes de {0}:\n{1}".format(nombre,acordes))
@@ -96,7 +110,7 @@ def song_to_dict():
 def m_graph(n, nombre):
     """Recibe una lista con los vertices del grafo y el nombre del archivo, lo convierte en un grafo 2 dimensional.
        Retorna el grafo y el nobre del archivo."""
-    video = int(input("¿paso a paso? si(1) no(0)\n"))
+    video = int(input("¿paso a paso? si(1) no(0)\n Si selecciona si(1) se requiere de bastante memoria RAM.\n"))
     print("Convirtiendo grafo a formato 2-dimensional...")
     aDir = os.getcwd()
     G = nx.DiGraph()
@@ -168,12 +182,15 @@ def m_graph(n, nombre):
                 plt.clf()
                 plt.close("all")
     else:
-        for i in range(len(n)):
-            if i != 0:
-                G.add_edge(n[i-1], n[i])
+        with alive_bar(len(n),spinner = 'notes2') as bar:
+            for i in range(len(n)):
+                if i != 0:
+                    G.add_edge(n[i-1], n[i])
+                time.sleep(0.002)
+                bar()
 
         pos = nx.layout.kamada_kawai_layout(G)
-        sf = 10
+        sf = 7
         sn = 10
         tn = len(n)
         if(tn <= 40):
@@ -205,10 +222,9 @@ def m_graph(n, nombre):
                 edge_color=edge_colors,
                 edge_cmap=plt.cm.Blues,
                 #connectionstyle="arc3,rad=0.1",
-                width=3,
+                width=2,
             )
-            print(tn)
-            
+        
             nx.draw_networkx_labels(
                 G,
                 pos,
@@ -231,14 +247,14 @@ def m_graph(n, nombre):
             fig.set_size_inches((10, 10))
             plt.savefig('{0}/GrafosImgs/grafo_{1}.png'.format(aDir, nombre))
             print("Listo.")
-            plt.show()
+            #plt.show()
         except:
             print("Hubo un error.")
 
     return G, nombre
 
 
-g = song_to_dict()
+#g = song_to_dict()
 
 #n0 = []
 #for i in range(len(g[0][0])):
@@ -247,5 +263,4 @@ g = song_to_dict()
     
 #print(n0)
 #g2D = m_graph(n0, g[3])
-g2D = m_graph(g[1]+g[2], g[3])
 #cell1.c_3D(g2D[0],g2D[1])

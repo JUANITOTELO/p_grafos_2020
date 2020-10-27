@@ -26,6 +26,7 @@ semitonos = []
 for i in range(len(list(G.edges))):
     semitonos.append("1/2")
 semitonos = dict(zip(G.edges,semitonos))
+print(G.edges)
 fig = plt.figure()
 nx.draw_networkx_nodes(
     G,
@@ -55,6 +56,6 @@ nx.draw_networkx_labels(
 ax = plt.gca()
 ax.set_axis_off()
 fig.set_size_inches((7, 7))
-fig.set_facecolor("#564f4f")
-plt.savefig('Escalas/Grafo_{0}.png'.format(main.nombre))
-plt.show()
+fig.set_facecolor("#564f4f00")
+#plt.savefig('Escalas/Grafo_{0}_word.png'.format(main.nombre))
+#plt.show()

@@ -10,13 +10,14 @@ import chart_studio.plotly as py
 import xlsxwriter
 import pandas as pd
 import plotly.graph_objs as go
+from alive_progress import alive_bar
+import time
 
 def pasar_na_num(G):
     """Recibe un grafo de la libreria networkx.
        Retorna una lista con los esxtremos de las aristas como números."""
     Nodes = list(G.nodes)
     edges2 = list(G.edges)
-    N = len(Nodes)
     Edges = []
     for i in edges2:
         i = list(i)
@@ -171,19 +172,20 @@ def c_3D(G, nombre):
     print("Pasando grafo a formato tridimensional...")
     aDir = os.getcwd()
     d = dict(G.degree)
+    
     Nodes = list(G.nodes)
     N = len(Nodes)
     Edges = pasar_na_num(G)
 
     Grafo = ig.Graph(Edges, directed=True)
     layt = Grafo.layout('kk', dim=3)
-
     Xn = [layt[k][0] for k in range(N)]  # x-coordinates of nodes
     Yn = [layt[k][1] for k in range(N)]  # y-coordinates
     Zn = [layt[k][2] for k in range(N)]  # z-coordinates
     Xe = []
     Ye = []
     Ze = []
+
     for e in Edges:
         Xe += [layt[e[0]][0], layt[e[1]][0], None]  # x-coordinates of edge ends
         Ye += [layt[e[0]][1], layt[e[1]][1], None]
@@ -249,17 +251,22 @@ def c_3D(G, nombre):
     figure.show()
 
 def c_csv(grafo1):
-    """Recibe lo que retorna la función c_2D y crea un archivo csv"""
+    """Recibe lo que retorna la función c_2D y crea un archivo csv con que contiene las columnas
+       Source y Target, representando las aristas"""
     toex = pasar_na_num(grafo1[0])
     libro = xlsxwriter.Workbook('{0}.xlsx'.format(grafo1[1]))
     hoja = libro.add_worksheet()
     row = 1
     hoja.write(0, 0, "Source")
     hoja.write(0, 1, "Target")
-    for i in toex:
-        hoja.write(row, 0, i[0]+1)
-        hoja.write(row, 1, i[1]+1)
-        row += 1
+    print("Pasando aristas a archivo csv...")
+    with alive_bar(len(n)) as bar:
+        for i in toex:
+            hoja.write(row, 0, i[0]+1)
+            hoja.write(row, 1, i[1]+1)
+            row += 1
+            time.sleep(0.02)
+            bar()
     libro.close()
     read_file = pd.read_excel(r'{0}.xlsx'.format(grafo1[1]), sheet_name='Sheet1')
     read_file.to_csv (r'ArchCsv/{0}.csv'.format(grafo1[1]), index = None, header=True)
