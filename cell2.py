@@ -27,7 +27,7 @@ def song_to_dict():
     for f in progressbar(archivos):
         if isfile(join('{0}/ArchiXml/'.format(aDir), f)):
             onlyfiles.append(f)
-        time.sleep(0.04)
+        time.sleep(0.02)
     # Imprimir archivos disponibles
     for i in onlyfiles:
         print(i.replace('.xml', ''))
@@ -74,7 +74,7 @@ def song_to_dict():
                     {compa: {"notas": temNotas, "acordes": temAcordes}})
             notas += temNotas
             acordes += temAcordes
-            time.sleep(0.04)
+            time.sleep(0.02)
         compaces.append(temCompaces)
 
     c = 1
@@ -87,7 +87,7 @@ def song_to_dict():
                 yy = i[f+1]
                 xx.update(yy)
             Compaces.append(xx)
-        time.sleep(0.04)
+        time.sleep(0.02)
 
     cancion = {}
     o = len(Compaces)
@@ -95,7 +95,7 @@ def song_to_dict():
         partes[i] = (c-1)
         partes[i+1] = c
         c += 1
-        time.sleep(0.04)
+        time.sleep(0.02)
 
     for i in progressbar(range(o)):
         cancion.update({partes[i]: Compaces[i]})
@@ -188,7 +188,7 @@ def m_graph(n, nombre):
                     G.add_edge(n[i-1], n[i])
                 time.sleep(0.002)
                 bar()
-
+        
         pos = nx.layout.kamada_kawai_layout(G)
         sf = 7
         sn = 10
@@ -248,6 +248,8 @@ def m_graph(n, nombre):
             plt.savefig('{0}/GrafosImgs/grafo_{1}.png'.format(aDir, nombre))
             print("Listo.")
             #plt.show()
+            plt.clf()
+            plt.close("all")
         except:
             print("Hubo un error.")
 
