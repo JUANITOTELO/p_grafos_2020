@@ -109,7 +109,7 @@ def song_to_dict():
 
 def m_graph(n, nombre):
     """Recibe una lista con los vertices del grafo y el nombre del archivo, lo convierte en un grafo 2 dimensional.
-       Retorna el grafo y el nobre del archivo."""
+       Retorna el grafo y el nombre del archivo."""
     video = int(input("¿paso a paso? si(1) no(0)\n Si selecciona si(1) se requiere de bastante memoria RAM.\n"))
     print("Convirtiendo grafo a formato 2-dimensional...")
     aDir = os.getcwd()

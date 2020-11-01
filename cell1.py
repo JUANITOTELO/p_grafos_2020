@@ -15,7 +15,7 @@ import time
 
 def pasar_na_num(G):
     """Recibe un grafo de la libreria networkx.
-       Retorna una lista con los esxtremos de las aristas como números."""
+       Retorna una lista con los extremos de las aristas como números."""
     Nodes = list(G.nodes)
     edges2 = list(G.edges)
     Edges = []
@@ -254,13 +254,14 @@ def c_csv(grafo1):
     """Recibe lo que retorna la función c_2D y crea un archivo csv con que contiene las columnas
        Source y Target, representando las aristas"""
     toex = pasar_na_num(grafo1[0])
+    n = len(toex)
     libro = xlsxwriter.Workbook('{0}.xlsx'.format(grafo1[1]))
     hoja = libro.add_worksheet()
     row = 1
     hoja.write(0, 0, "Source")
     hoja.write(0, 1, "Target")
     print("Pasando aristas a archivo csv...")
-    with alive_bar(len(n)) as bar:
+    with alive_bar(n) as bar:
         for i in toex:
             hoja.write(row, 0, i[0]+1)
             hoja.write(row, 1, i[1]+1)

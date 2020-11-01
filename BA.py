@@ -34,3 +34,16 @@ class BusquedaProfundidad:
                     self.dfs(visitados, graph, neighbour,e_eT)
                     time.sleep(0.02)
 
+    def arbol_de_expan(self):
+        bea = BusquedaProfundidad()
+        e_eT = []
+        visitados = set()
+        g = cell2.song_to_dict()
+        g2D = cell2.m_graph(g[1]+g[2], g[3])
+        eT = bea.tG(g2D[0])
+        t2D = nx.Graph()
+        bea.dfs(visitados, eT, g[1][0],e_eT)
+        t2D.add_edges_from(e_eT)
+        cell3.GrafoSimple().crear_multigrafo((t2D, "Árbol-Exp-{0}".format(g2D[1])))
+
+
