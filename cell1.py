@@ -246,7 +246,7 @@ def c_3D(G, nombre):
 
     data = [trace1, trace2]
     figure = go.Figure(data=data, layout=layout)
-    figure.write_html("{0}/app/templates/3D_Graph_{1}.html".format(aDir,nombre))
+    figure.write_html("{0}/3DGraphs/3D_Graph_{1}.html".format(aDir,nombre))
     print("Listo.")
     figure.show()
 

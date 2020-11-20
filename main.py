@@ -1,11 +1,11 @@
 import cell1, cell2, cell3, BA, FW
 import networkx as nx
+import os
 import matplotlib.pyplot as plt
 
 g = cell2.song_to_dict()
 g2D = cell2.m_graph(g[1]+g[2], g[3])
-
-# a = BA.BusquedaProfundidad()
-# a.arbol_de_expan()
-
+# cell1.c_3D(g2D[0],g2D[1])
+a = BA.BusquedaProfundidad()
+ae = a.arbol_de_expan(g, g2D)
 FW.centro_FW(g2D[0],g2D[1])

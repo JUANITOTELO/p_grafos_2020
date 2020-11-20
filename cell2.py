@@ -200,7 +200,7 @@ def m_graph(n, nombre):
         try:
             low, *_, high = sorted(d.values())
             norm = mpl.colors.Normalize(vmin=low, vmax=high, clip=True)
-            mapper = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.coolwarm)
+            mapper = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.winter)
 
             node_sizes = [v*sn for v in d.values()]
             M = G.number_of_edges()
@@ -243,13 +243,25 @@ def m_graph(n, nombre):
 
             ax = plt.gca()
             ax.set_axis_off()
-            fig.set_facecolor("#564f4f")
+            fig.set_facecolor("#00225800")
+            # #564f4f
             fig.set_size_inches((10, 10))
-            plt.savefig('{0}/GrafosImgs/grafo_{1}.png'.format(aDir, nombre))
-            print("Listo.")
-            #plt.show()
+            pd = int(input("¿Guardar? si(1) no(0)\n"))
+            if pd == 1:
+                opt = int(input("(1)pdf\n(2)png\n(3)svg\n"))
+                if opt == 1:
+                    plt.savefig('{0}/ArchPdf/grafo_{1}.pdf'.format(aDir, nombre))
+                    plt.show()
+                    
+                elif opt == 2:
+                    plt.savefig('{0}/GrafosImgs/grafo_{1}.png'.format(aDir, nombre))
+                    plt.show()
+                    
+                elif opt == 3:
+                    plt.savefig('{0}/ArchSvg/grafo_{1}.svg'.format(aDir, nombre))
+                    plt.show()
             plt.clf()
-            plt.close("all")
+            print("Listo.")
         except:
             print("Hubo un error.")
 

@@ -26,24 +26,26 @@ class BusquedaProfundidad:
 
     def dfs(self, visitados, graph, node, e_eT):
         if node not in visitados:
-            print (node)
             visitados.add(node)
-            for neighbour in progressbar(graph[node]):
+            for neighbour in graph[node]:
                 if node != neighbour and neighbour not in visitados:
                     e_eT.append((node, neighbour))
                     self.dfs(visitados, graph, neighbour,e_eT)
-                    time.sleep(0.02)
+                
 
-    def arbol_de_expan(self):
+    def arbol_de_expan(self, g, g2D):
+        print("Creando árbol de expansión...")
         bea = BusquedaProfundidad()
         e_eT = []
         visitados = set()
-        g = cell2.song_to_dict()
-        g2D = cell2.m_graph(g[1]+g[2], g[3])
+        # g = cell2.song_to_dict()
+        # g2D = cell2.m_graph(g[1]+g[2], g[3])
         eT = bea.tG(g2D[0])
         t2D = nx.Graph()
         bea.dfs(visitados, eT, g[1][0],e_eT)
         t2D.add_edges_from(e_eT)
-        cell3.GrafoSimple().crear_multigrafo((t2D, "Árbol-Exp-{0}".format(g2D[1])))
+        nom = g2D[1]
+        cell3.GrafoSimple().crear_multigrafo((t2D, "Árbol-Exp-{0}".format(nom.replace(" ","-"))))
+        return "ArchPdf/Árbol-Exp-{0}".format(nom.replace(" ","-"))
 
 
