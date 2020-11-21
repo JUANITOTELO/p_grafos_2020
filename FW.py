@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 
 def print_solution(distance,s):
+    """ Recibe una matriz distance y el tamaño de esta.
+        Imprime la matriz de en consola."""
     for i in range(s):
         for j in range(s):
             if(distance[i][j] == 9999999):
@@ -14,9 +16,8 @@ def print_solution(distance,s):
         print(" ")
 
 def centro_FW(G,nombre):
-    """Recibe un grafo de la libreria networkx.
-       Muestra el centro.
-       Retorna en una lista las aristas que generan el centro del grafo."""
+    """Recibe un grafo de la librería networkx y el nombre del grafo.
+       Muestra el centro en un png."""
     A = nx.to_numpy_array(G)
     s = len(A)
     #Elimino los ciclos del grafo y asigno infinitos
@@ -104,7 +105,8 @@ def centro_FW(G,nombre):
         cen,
         pos,
         font_size=sf,
-        font_color="white",
+        font_weight="bold",
+        font_color="#0f1010",
     )
     # set alpha value for each edge
     # colorFE = []
@@ -118,10 +120,10 @@ def centro_FW(G,nombre):
 
     ax = plt.gca()
     ax.set_axis_off()
-    fig.set_facecolor("#00225800")
+    fig.set_facecolor("#f1f6f400")
     # #564f4f
-    fig.set_size_inches((10, 10))
-    plt.savefig('{0}/GrafosImgs/centro_de_{1}.png'.format(aDir, nombre))
+    fig.set_size_inches((7, 7))
+    plt.savefig('{0}/ArchPdf/centro_de_{1}.pdf'.format(aDir, nombre))
     plt.show()
     plt.clf()
 

@@ -8,19 +8,21 @@ import music21 as m
 import os
 
 def getMusicProperties(x):
-        s = ''
-        t=''
-        r=''
-        s = str(x.pitch)
-        
-        if x.tie != None:
-            t = 't'
-        elif(x.isRest):
-            r = x.duration+'r'
-        s += t+r
-        return s
+    """ Recibe ya sea una nota o un acorde y lo convierte en una cadena te texto."""
+    s = ''
+    t=''
+    r=''
+    s = str(x.pitch)
+    if x.tie != None:
+        t = 't'
+    elif(x.isRest):
+        r = x.duration+'r'
+    s += t+r
+    return s
 
 def crear_escala(mM,nota):
+    """ Recibe si la escala es mayor o menor y desde que nota empezar a crear la escala.
+        Guarda las escalas en forma de grafo en un png."""
     aDir=os.getcwd()
     song = m.converter.parse('{0}/ArchiXml/{1}.xml'.format(aDir,"Escala Cromática"))
     #sp = m.midi.realtime.StreamPlayer(song)
@@ -56,12 +58,10 @@ def crear_escala(mM,nota):
             notas.append(n[1:])
 
         if (a.isRest):
-            print("hola")
             x = a
             s = getMusicProperties(x)
             notas.append(s)
 
-    print("Done.")
     n = notas[0:12]
     nombre = n[nota]
     n = n[nota::]+n[0:nota]
@@ -102,13 +102,13 @@ def crear_escala(mM,nota):
     nx.draw_networkx_nodes(
         G,
         pos,
-        node_size=800,
+        node_size=900,
         node_color=nodesColors
     )
     nx.draw_networkx_edges(
         G,
         pos,
-        node_size=800,
+        node_size=900,
         arrowstyle="<-",
         arrowsize=10,
         width=4,
@@ -121,8 +121,9 @@ def crear_escala(mM,nota):
     nx.draw_networkx_labels(
         G,
         pos,
-        font_size=12,
-        font_color="orange",
+        font_size=18,
+        font_weight="bold",
+        font_color="#059eb0",
     )
 
 
@@ -131,15 +132,15 @@ def crear_escala(mM,nota):
     fig.set_size_inches((10, 10))
     fig.set_facecolor("#4f4f4f00")
     if mM == "m":
-        plt.savefig('Escalas/EscalasMenores/Escala_menor_natural_de_{0}.png'.format(nombre))
+        plt.savefig('Escalas/EscalasMenores/Escala_menor_natural_de_{0}.pdf'.format(nombre.replace('4', '')))
         plt.close(fig=fig)
         plt.clf()
     elif mM == "M":
-        plt.savefig('Escalas/EscalasMayores/Escala_Mayor_de_{0}.png'.format(nombre))
+        plt.savefig('Escalas/EscalasMayores/Escala_Mayor_de_{0}.pdf'.format(nombre.replace('4', '')))
         plt.close(fig=fig)
         plt.clf()
     else:
-        plt.savefig('Escalas/Escala_cromática_desde_{0}.png'.format(nombre))
+        plt.savefig('Escalas/Escala_cromática_desde_{0}.pdf'.format(nombre.replace('4', '')))
         plt.close(fig=fig)
         plt.clf()
     # plt.show()

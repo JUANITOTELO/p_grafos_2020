@@ -100,15 +100,11 @@ def song_to_dict():
     for i in progressbar(range(o)):
         cancion.update({partes[i]: Compaces[i]})
         time.sleep(0.02)
-#     print("Compaces, notas y acordes de {0}:\n{1}".format(nombre,cancion))
-#     print("Notas de {0}:\n{1}".format(nombre,notas))
-#     print("Acordes de {0}:\n{1}".format(nombre,acordes))
     print("Listo.")
     return cancion, notas, acordes, nombre
 
-
 def m_graph(n, nombre):
-    """Recibe una lista con los vertices del grafo y el nombre del archivo, lo convierte en un grafo 2 dimensional.
+    """Recibe una lista con los vértices del grafo y el nombre del archivo, lo convierte en un grafo 2 dimensional.
        Retorna el grafo y el nombre del archivo."""
     video = int(input("¿paso a paso? si(1) no(0)\n Si selecciona si(1) se requiere de bastante memoria RAM.\n"))
     print("Convirtiendo grafo a formato 2-dimensional...")
@@ -230,7 +226,8 @@ def m_graph(n, nombre):
                 G,
                 pos,
                 font_size=sf,
-                font_color="white",
+                font_weight="bold",
+        font_color="#0f1010",
             )
             # set alpha value for each edge
             # colorFE = []
@@ -244,9 +241,9 @@ def m_graph(n, nombre):
 
             ax = plt.gca()
             ax.set_axis_off()
-            fig.set_facecolor("#00225800")
+            fig.set_facecolor("#f1f6f400")
             # #564f4f
-            fig.set_size_inches((10, 10))
+            fig.set_size_inches((7, 7))
             pd = int(input("¿Guardar? si(1) no(0)\n"))
             if pd == 1:
                 opt = int(input("(1)pdf\n(2)png\n(3)svg\n"))
@@ -267,15 +264,3 @@ def m_graph(n, nombre):
             print("Hubo un error.")
 
     return G, nombre
-
-
-#g = song_to_dict()
-
-#n0 = []
-#for i in range(len(g[0][0])):
-#    if ('M{0}'.format(i+1) in g[0][0]):
-#        n0 += g[0][0]['M{0}'.format(i+1)]['notas']
-    
-#print(n0)
-#g2D = m_graph(n0, g[3])
-#cell1.c_3D(g2D[0],g2D[1])

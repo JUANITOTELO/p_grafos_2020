@@ -23,8 +23,10 @@ class BusquedaProfundidad:
         #print(T)
         return T
         
-
     def dfs(self, visitados, graph, node, e_eT):
+        """ Es la función recursiva de Backtracking, recibe un conjunto de visitados,
+            un diccionario de adyacencia, el nodo donde empieza y una lista para llenar
+            de aristas."""
         if node not in visitados:
             visitados.add(node)
             for neighbour in graph[node]:
@@ -32,8 +34,10 @@ class BusquedaProfundidad:
                     e_eT.append((node, neighbour))
                     self.dfs(visitados, graph, neighbour,e_eT)
                 
-
     def arbol_de_expan(self, g, g2D):
+        """ Esta función recibe un diccionario de la función song_to_dict y una tripla
+            de la función m_graph, y utiliza estos parámetros para crear ya sea una
+            imagen o un pdf del árbol de expansión."""
         print("Creando árbol de expansión...")
         bea = BusquedaProfundidad()
         e_eT = []
@@ -45,7 +49,11 @@ class BusquedaProfundidad:
         bea.dfs(visitados, eT, g[1][0],e_eT)
         t2D.add_edges_from(e_eT)
         nom = g2D[1]
-        cell3.GrafoSimple().crear_multigrafo((t2D, "Árbol-Exp-{0}".format(nom.replace(" ","-"))))
+        opti = int(input("¿Guardar para presentación?"))
+        if opti == 1:
+            cell3.GrafoSimple().crear_multigrafo((t2D, "Árbol-Exp-{0}".format(nom.replace(" ","-"))))
+        else:
+            cell3.GrafoSimple().crear_multigrafo_simple((t2D, "Árbol-Exp-{0}".format(nom.replace(" ","-"))))
         return "ArchPdf/Árbol-Exp-{0}".format(nom.replace(" ","-"))
 
 

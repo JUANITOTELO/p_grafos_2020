@@ -273,8 +273,3 @@ def c_csv(grafo1):
     read_file = pd.read_excel(r'{0}.xlsx'.format(grafo1[1]), sheet_name='Sheet1')
     read_file.to_csv (r'ArchCsv/{0}.csv'.format(grafo1[1]), index = None, header=True)
     os.system("rm {0}.xlsx".format(grafo1[1]))
-
-
-#grafo1 = c_2D()
-#c_csv(grafo1)
-# c_3D(grafo1[0],grafo1[1])

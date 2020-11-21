@@ -47,7 +47,8 @@ class GrafoSimple:
             G,
             pos,
             font_size=7,
-            font_color="white",
+            font_weight="bold",
+        font_color="#0f1010",
         )
         # set alpha value for each edge
         # colorFE = []
@@ -61,9 +62,9 @@ class GrafoSimple:
 
         ax = plt.gca()
         ax.set_axis_off()
-        fig.set_facecolor("#00225800")
+        fig.set_facecolor("#f1f6f400")
         # #564f4f
-        fig.set_size_inches((10, 10))
+        fig.set_size_inches((7, 7))
         pd = int(input("¿Guardar? si(1) no(0)\n"))
         if pd == 1:
             opt = int(input("(1)pdf\n(2)png\n(3)svg\n"))
@@ -78,7 +79,37 @@ class GrafoSimple:
             elif opt == 3:
                 plt.savefig('{0}/ArchSvg/grafo_{1}.svg'.format(aDir, nombre))
                 plt.show()
-        plt.clf()
-        print("Listo.") 
+        plt.close(fig=fig)
+        print("Listo.")
+
+    def crear_multigrafo_simple(self, g2D):
+        """ Recibe como parametros una tripla de la función song_to_dict y lo que retorna la función m_graph.
+            Crea un pdf del grafo."""
+        
+        """Recibe como parametros una tripla de la función song_to_dict y lo que retorna la función m_graph.
+           Crea un pdf del grafo."""
+        
+        try:
+            m = list(g2D[0].edges)
+            n = list(g2D[0].nodes)
+            G=nx.MultiDiGraph(m)
+
+            G.graph['edge'] = {'arrowsize': '0.6', 'splines': 'curved'}
+            G.graph['node']={'shape':'circle'}
+            G.graph['graph'] = {'scale': '3'}
+
+            A = to_agraph(G) 
+            A.node_attr["fixedsize"] = "true"
+            A.node_attr['style']='filled'
+            ni = A.get_node(n[0])
+            ni.attr['fillcolor']="#32CD32"
+            nf = A.get_node(n[-1])
+            nf.attr['fillcolor']="#DC143C"
+
+
+            A.layout('dot')                                                       
+            A.draw('ArchSvg/{0}.svg'.format(g2D[1]))
+        except:
+            print("¡Oops!")
 
 
