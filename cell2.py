@@ -179,8 +179,9 @@ def m_graph(n, nombre):
                 plt.savefig(
                     '{0}/prVideo/Grafo_{1}_{2}.png'.format(aDir, nombre, i))
                 print("Listo.")
+                plt.close(fig=fig)
                 plt.clf()
-                plt.close("all")
+                
     else:
         with alive_bar(len(n),spinner = 'notes2') as bar:
             for i in range(len(n)):

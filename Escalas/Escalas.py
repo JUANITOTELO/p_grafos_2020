@@ -34,7 +34,7 @@ def crear_escala(mM,nota):
         if a.isStream:
             e = m.repeat.Expander(a)
             s2 = e.process()
-            timing = s2.secondsMap
+            # timing = s2.secondsMap
             song[i] = s2
         i += 1
 
@@ -65,7 +65,6 @@ def crear_escala(mM,nota):
     n = notas[0:12]
     nombre = n[nota]
     n = n[nota::]+n[0:nota]
-    print(n)
     if mM == "m":
         nums = [n[1],n[4],n[6],n[9],n[11]]
         for i in nums:
@@ -82,7 +81,6 @@ def crear_escala(mM,nota):
         n[i] = n[i].replace('4', '')
         # if i != 0:
         G.add_edge(n[i-1], n[i])
-    print(n)
     pos = nx.layout.shell_layout(G, rotate= np.pi/2)
     nodesColors = []
     for i in G.nodes:
@@ -91,11 +89,15 @@ def crear_escala(mM,nota):
         else:
             nodesColors.append((1.0,1.0,1.0))
     
-    semitonos = []
-    for i in range(len(list(G.edges))):
-        semitonos.append("1/2")
-    semitonos = dict(zip(G.edges,semitonos))
-    print(G.edges)
+    inter = []
+    if mM == "m":
+        inter = ["1","1/2","1","1","1/2","1","1"]
+    elif mM == "M":
+        inter = ["1","1","1/2","1","1","1","1/2"]
+    else:
+        for i in range(len(list(G.edges))):
+            inter.append("1/2")
+    inter = dict(zip(G.edges,inter))
     fig = plt.figure()
     nx.draw_networkx_nodes(
         G,
@@ -109,12 +111,12 @@ def crear_escala(mM,nota):
         node_size=800,
         arrowstyle="<-",
         arrowsize=10,
-        width=2,
+        width=4,
         connectionstyle="arc3,rad=0.2",
         
     )
-    if mM != "m" and mM != "M":
-        nx.draw_networkx_edge_labels(G,pos,edge_labels=semitonos,rotate=False)
+    
+    nx.draw_networkx_edge_labels(G,pos,edge_labels=inter,rotate=False)
     
     nx.draw_networkx_labels(
         G,
@@ -127,11 +129,17 @@ def crear_escala(mM,nota):
     ax = plt.gca()
     ax.set_axis_off()
     fig.set_size_inches((10, 10))
-    fig.set_facecolor("#564f4f")
+    fig.set_facecolor("#4f4f4f00")
     if mM == "m":
-        plt.savefig('Escalas/EscalasMenores/Escala_menor_de_{0}.png'.format(nombre))
+        plt.savefig('Escalas/EscalasMenores/Escala_menor_natural_de_{0}.png'.format(nombre))
+        plt.close(fig=fig)
+        plt.clf()
     elif mM == "M":
         plt.savefig('Escalas/EscalasMayores/Escala_Mayor_de_{0}.png'.format(nombre))
+        plt.close(fig=fig)
+        plt.clf()
     else:
-        plt.savefig('Escalas/Escala_desde_{0}.png'.format(nombre))
+        plt.savefig('Escalas/Escala_cromática_desde_{0}.png'.format(nombre))
+        plt.close(fig=fig)
+        plt.clf()
     # plt.show()

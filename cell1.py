@@ -161,6 +161,7 @@ def c_2D():
         fig.set_facecolor("#564f4f")
         fig.set_size_inches((15, 15))
         plt.savefig('{0}/GrafosImgs/Grafo_{1}.png'.format(aDir,nombre))
+        plt.clf()
         print("Listo.")
         plt.show()
     
