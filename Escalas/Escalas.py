@@ -85,15 +85,15 @@ def crear_escala(mM,nota):
     nodesColors = []
     for i in G.nodes:
         if("#" in i):
-            nodesColors.append((0.0,0.0,0.0))
+            nodesColors.append("#000000")
         else:
-            nodesColors.append((1.0,1.0,1.0))
+            nodesColors.append("#fffce2")
     
     inter = []
     if mM == "m":
-        inter = ["1","1/2","1","1","1/2","1","1"]
+        inter = ["1","1","1/2","1","1","1/2","1"]
     elif mM == "M":
-        inter = ["1","1","1/2","1","1","1","1/2"]
+        inter = ["1/2","1","1","1","1/2","1","1"]
     else:
         for i in range(len(list(G.edges))):
             inter.append("1/2")

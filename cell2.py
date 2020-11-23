@@ -4,9 +4,12 @@ import music21 as m
 import networkx as nx
 from os import listdir
 import matplotlib as mpl
+import moviepy.editor as mp
 import netgraph
 import numpy
 from progressbar import progressbar
+from glob import glob
+import imageio
 from alive_progress import alive_bar
 import time
 import os
@@ -16,6 +19,27 @@ from os.path import isfile, join
 import chart_studio.plotly as py
 import matplotlib.animation as animation
 
+def crear_video(nombre,fps):
+    aDir = os.getcwd()
+    print("Creando video...")
+    png_dir = '{0}/prVideo/'.format(aDir)
+    images = []
+    files = os.listdir(png_dir)
+    files.remove("gifs")
+    files.remove("videos")
+    for file_name in progressbar(range(len(files)+1)):
+        try:
+            file_path = os.path.join(png_dir, "G{0}.png".format(file_name))
+            images.append(imageio.imread(file_path))
+            os.remove('{0}/prVideo/G{1}.png'.format(aDir,file_name))
+            time.sleep(0.02)
+        except:
+            continue
+    imageio.mimsave('{0}/prVideo/gifs/movie-{1}.gif'.format(aDir,nombre), images,fps=fps)
+    print("+")
+    time.sleep(5)
+    clip = mp.VideoFileClip("{0}/prVideo/gifs/movie-{1}.gif".format(aDir,nombre))
+    clip.write_videofile('{0}/prVideo/videos/movie-{1}.mp4'.format(aDir,nombre))
 
 def song_to_dict():
     """Convierte la partitura en un diccionario que incluye los instrumentos numerados del 0 hasta el total de
@@ -106,77 +130,84 @@ def song_to_dict():
 def m_graph(n, nombre):
     """Recibe una lista con los vértices del grafo y el nombre del archivo, lo convierte en un grafo 2 dimensional.
        Retorna el grafo y el nombre del archivo."""
-    video = int(input("¿paso a paso? si(1) no(0)\n Si selecciona si(1) se requiere de bastante memoria RAM.\n"))
+    video = int(input("¿paso a paso? si(1) no(0)\n"))
     print("Convirtiendo grafo a formato 2-dimensional...")
     aDir = os.getcwd()
     G = nx.DiGraph()
     if(video == 1):
-        for i in range(len(n)):
-            if i != 0:
-                G.add_edge(n[i-1], n[i])
+        print("Creando frames...")
+        with alive_bar(len(n),spinner = 'notes2') as bar:
+            for i in range(len(n)):
+                try:
+                    if i != 0:
+                        G.add_edge(n[i-1], n[i])
 
-                pos = nx.layout.kamada_kawai_layout(G)
+                        pos = nx.layout.kamada_kawai_layout(G)
 
-                d = dict(G.degree)
-                low, *_, high = sorted(d.values())
-                norm = mpl.colors.Normalize(vmin=low, vmax=high, clip=True)
-                mapper = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.coolwarm)
-                node_sizes = [v*10 for v in d.values()]
-                M = G.number_of_edges()
-                edge_colors = range(2, M+2)
-                edge_alphas = [(5 + i) / (M + 4) for i in range(M)]
+                        d = dict(G.degree)
+                        low, *_, high = sorted(d.values())
+                        norm = mpl.colors.Normalize(vmin=low, vmax=high, clip=True)
+                        mapper = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.coolwarm)
+                        node_sizes = [v*10 for v in d.values()]
+                        M = G.number_of_edges()
+                        edge_colors = range(2, M+2)
+                        edge_alphas = [(5 + i) / (M + 4) for i in range(M)]
 
-                fig = plt.figure()
-                nx.draw_networkx_nodes(
-                    G,
-                    pos,
-                    node_size=node_sizes,
-                    node_color=[mapper.to_rgba(i) for i in d.values()]
-                )
-                edges = nx.draw_networkx_edges(
-                    # G,
-                    # pos,
-                    # node_size=node_sizes,
-                    # arrowstyle="wedge",
-                    # arrowsize=10,
-                    # edge_color=edge_colors,
-                    # edge_cmap=plt.cm.Blues,
-                    # width=2,
-                    G,
-                    pos,
-                    node_size=node_sizes,
-                    arrowstyle="wedge",
-                    arrowsize=10,
-                    edge_color=edge_colors,
-                    edge_cmap=plt.cm.Blues,
-                    #connectionstyle="arc3,rad=0.2",
-                    width=3,
-                )
-                nx.draw_networkx_labels(
-                    G,
-                    pos,
-                    font_size=12,
-                    font_color="white",
-                )
-                # set alpha value for each edge
-                colorFE = []
-                for i in range(M):
-                    edges[i].set_alpha(edge_alphas[i])
-                    colorFE.append(edge_alphas[i])
+                        fig = plt.figure()
+                        nx.draw_networkx_nodes(
+                            G,
+                            pos,
+                            node_size=node_sizes,
+                            node_color=[mapper.to_rgba(i) for i in d.values()]
+                        )
+                        edges = nx.draw_networkx_edges(
+                            # G,
+                            # pos,
+                            # node_size=node_sizes,
+                            # arrowstyle="wedge",
+                            # arrowsize=10,
+                            # edge_color=edge_colors,
+                            # edge_cmap=plt.cm.Blues,
+                            # width=2,
+                            G,
+                            pos,
+                            node_size=node_sizes,
+                            arrowstyle="wedge",
+                            arrowsize=10,
+                            edge_color=edge_colors,
+                            edge_cmap=plt.cm.Blues,
+                            #connectionstyle="arc3,rad=0.2",
+                            width=3,
+                        )
+                        nx.draw_networkx_labels(
+                            G,
+                            pos,
+                            font_size=12,
+                            font_color="white",
+                        )
+                        # set alpha value for each edge
+                        colorFE = []
+                        for i in range(M):
+                            edges[i].set_alpha(edge_alphas[i])
+                            colorFE.append(edge_alphas[i])
 
-                # pc = mpl.collections.PatchCollection(edges, cmap=plt.cm.Blues)
-                # pc.set_array(edge_colors)
-                # plt.colorbar(pc)
+                        # pc = mpl.collections.PatchCollection(edges, cmap=plt.cm.Blues)
+                        # pc.set_array(edge_colors)
+                        # plt.colorbar(pc)
 
-                ax = plt.gca()
-                ax.set_axis_off()
-                fig.set_facecolor("#564f4f")
-                fig.set_size_inches((10, 10))
-                plt.savefig(
-                    '{0}/prVideo/Grafo_{1}_{2}.png'.format(aDir, nombre, i))
-                print("Listo.")
-                plt.close(fig=fig)
-                plt.clf()
+                        ax = plt.gca()
+                        ax.set_axis_off()
+                        fig.set_facecolor("#564f4f")
+                        fig.set_size_inches((10, 10))
+                        plt.savefig(
+                            '{0}/prVideo/G{1}.png'.format(aDir, i))
+                        plt.close(fig=fig)
+                        plt.clf()
+                    time.sleep(0.002)
+                    bar()
+                except:
+                    continue
+        crear_video(nombre,2)
                 
     else:
         with alive_bar(len(n),spinner = 'notes2') as bar:
