@@ -20,26 +20,29 @@ import chart_studio.plotly as py
 import matplotlib.animation as animation
 
 def crear_video(nombre,fps):
-    aDir = os.getcwd()
-    print("Creando video...")
-    png_dir = '{0}/prVideo/'.format(aDir)
-    images = []
-    files = os.listdir(png_dir)
-    files.remove("gifs")
-    files.remove("videos")
-    for file_name in progressbar(range(len(files)+1)):
-        try:
-            file_path = os.path.join(png_dir, "G{0}.png".format(file_name))
-            images.append(imageio.imread(file_path))
-            os.remove('{0}/prVideo/G{1}.png'.format(aDir,file_name))
-            time.sleep(0.02)
-        except:
-            continue
-    imageio.mimsave('{0}/prVideo/gifs/movie-{1}.gif'.format(aDir,nombre), images,fps=fps)
-    print("+")
-    time.sleep(5)
-    clip = mp.VideoFileClip("{0}/prVideo/gifs/movie-{1}.gif".format(aDir,nombre))
-    clip.write_videofile('{0}/prVideo/videos/movie-{1}.mp4'.format(aDir,nombre))
+    try:
+        aDir = os.getcwd()
+        print("Creando video...")
+        png_dir = '{0}/prVideo/'.format(aDir)
+        images = []
+        files = os.listdir(png_dir)
+        files.remove("gifs")
+        files.remove("videos")
+        for file_name in progressbar(range(len(files)+1)):
+            try:
+                file_path = os.path.join(png_dir, "G{0}.png".format(file_name))
+                images.append(imageio.imread(file_path))
+                os.remove('{0}/prVideo/G{1}.png'.format(aDir,file_name))
+                time.sleep(0.02)
+            except:
+                continue
+        imageio.mimsave('{0}/prVideo/gifs/movie-{1}.gif'.format(aDir,nombre), images,fps=fps)
+        print("+")
+        time.sleep(5)
+        clip = mp.VideoFileClip("{0}/prVideo/gifs/movie-{1}.gif".format(aDir,nombre))
+        clip.write_videofile('{0}/prVideo/videos/movie-{1}.mp4'.format(aDir,nombre))
+    except:
+        pass
 
 def song_to_dict():
     """Convierte la partitura en un diccionario que incluye los instrumentos numerados del 0 hasta el total de
@@ -147,8 +150,8 @@ def m_graph(n, nombre):
                         d = dict(G.degree)
                         low, *_, high = sorted(d.values())
                         norm = mpl.colors.Normalize(vmin=low, vmax=high, clip=True)
-                        mapper = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.coolwarm)
-                        node_sizes = [v*10 for v in d.values()]
+                        mapper = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.winter)
+                        node_sizes = [v*25 for v in d.values()]
                         M = G.number_of_edges()
                         edge_colors = range(2, M+2)
                         edge_alphas = [(5 + i) / (M + 4) for i in range(M)]
@@ -219,7 +222,7 @@ def m_graph(n, nombre):
         
         pos = nx.layout.kamada_kawai_layout(G)
         sf = 7
-        sn = 10
+        sn = 25
         tn = len(n)
         if(tn <= 40):
             sf = 15
@@ -258,7 +261,7 @@ def m_graph(n, nombre):
                 pos,
                 font_size=sf,
                 font_weight="bold",
-        font_color="#0f1010",
+                font_color="#0f1010",
             )
             # set alpha value for each edge
             # colorFE = []
@@ -272,7 +275,7 @@ def m_graph(n, nombre):
 
             ax = plt.gca()
             ax.set_axis_off()
-            fig.set_facecolor("#f1f6f400")
+            fig.set_facecolor("#f1f6f450")
             # #564f4f
             fig.set_size_inches((7, 7))
             pd = int(input("¿Guardar? si(1) no(0)\n"))

@@ -15,7 +15,7 @@ class GrafoSimple:
         G = g2D[0]
         nombre = g2D[1]
         pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
-        sn = 10
+        sn = 25
         d = dict(G.degree)
         low, *_, high = sorted(d.values())
         norm = mpl.colors.Normalize(vmin=low, vmax=high, clip=True)
@@ -108,7 +108,7 @@ class GrafoSimple:
 
 
             A.layout('dot')                                                       
-            A.draw('ArchSvg/{0}.svg'.format(g2D[1]))
+            A.draw('ArchPdf/Árbol-S-Exp{0}.pdf'.format(g2D[1]))
         except:
             print("¡Oops!")
 

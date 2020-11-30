@@ -73,7 +73,7 @@ def centro_FW(G,nombre):
     cen.add_edges_from(Edges)
     pos = nx.layout.kamada_kawai_layout(cen)
     sf = 7
-    sn = 10
+    sn = 25
     d = dict(cen.degree)
     low, *_, high = sorted(d.values())
     norm = mpl.colors.Normalize(vmin=low, vmax=high, clip=True)
